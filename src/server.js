@@ -31,13 +31,28 @@ axios({
   data: {
     grant_type: 'client_credentials'
   }
-}).then((response) => console.log(response.data));
+}).then((response) => {
+  const accessToken = response.data?.access_token;
 
-/*
-curl --request POST \
-  --url https://api-pix-h.gerencianet.com.br/oauth/token \
-  --header 'Authorization: Basic Q2xpZW50X0lkX2E0Y2Y5ZGNjOGYwZmFhYTk2NmJlOGI1YTg2MTczMmZjZDRkYzgwZWQ6Q2xpZW50X1NlY3JldF8yMzMxZTdlZjBiNjM3ZWI3ODZiOWFhMDQzNDJkMmE4Zjk0ZjdkMDVh' \
-  --header 'Content-Type: application/json' \
-  --data '{
-	"grant_type": "client_credentials"
-}'*/
+  const reqGN = axios.create({
+    baseURL: process.env.GN_ENDPOINT,
+    httpsAgent: agent,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  const dataCob = {
+    calendario: {
+      expiracao: 3600
+    },
+    valor: {
+      original: '100.00'
+    },
+    chave: '126bec4a-2eb6-4b79-a045-78db68412899',
+    solicitacaoPagador: 'Cobrança dos serviços prestados.'
+  };
+
+  reqGN.post('/v2/cob', dataCob).then((response) => console.log(response.data));
+});
