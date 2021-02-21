@@ -1,0 +1,26 @@
+{
+  "name": "api-pix-gn",
+  "version": "1.0.0",
+  "description": "Integração API Pix GerenciaNet",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon src/server.js"
+  },
+  "keywords": [
+    "API",
+    "Pix",
+    "GerenciaNet",
+    "Programador",
+    "a",
+    "Bordo"
+  ],
+  "author": "Ayrton Teshima",
+  "license": "MIT",
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
+}
