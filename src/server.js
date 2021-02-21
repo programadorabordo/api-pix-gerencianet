@@ -26,8 +26,8 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', 'src/views');
 
-app.get('/', (req, res) => {
-  axios({
+app.get('/', async (req, res) => {
+  const authResponse = await axios({
     method: 'POST',
     url: `${process.env.GN_ENDPOINT}/oauth/token`,
     headers: {
@@ -38,33 +38,33 @@ app.get('/', (req, res) => {
     data: {
       grant_type: 'client_credentials'
     }
-  }).then((response) => {
-    const accessToken = response.data?.access_token;
-  
-    const reqGN = axios.create({
-      baseURL: process.env.GN_ENDPOINT,
-      httpsAgent: agent,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      }
-    });
-  
-    const dataCob = {
-      calendario: {
-        expiracao: 3600
-      },
-      valor: {
-        original: '100.00'
-      },
-      chave: '126bec4a-2eb6-4b79-a045-78db68412899',
-      solicitacaoPagador: 'Cobrança dos serviços prestados.'
-    };
-  
-    reqGN.post('/v2/cob', dataCob).then((response) => res.send(response.data));
   });
   
+  const accessToken = authResponse.data?.access_token;
 
+  const reqGN = axios.create({
+    baseURL: process.env.GN_ENDPOINT,
+    httpsAgent: agent,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  const dataCob = {
+    calendario: {
+      expiracao: 3600
+    },
+    valor: {
+      original: '100.00'
+    },
+    chave: '126bec4a-2eb6-4b79-a045-78db68412899',
+    solicitacaoPagador: 'Cobrança dos serviços prestados.'
+  };
+
+  const cobResponse = await reqGN.post('/v2/cob', dataCob);
+
+  res.send(cobResponse.data);
 });
 
 app.listen(8000, () => {
