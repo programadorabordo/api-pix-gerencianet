@@ -12,12 +12,11 @@ const agent = new https.Agent({
   passphrase: ''
 });
 
-const credentials = Buffer.from(
-  `${process.env.GN_CLIENT_ID}:${process.env.GN_CLIENT_SECRET}`
-).toString('base64');
+const authenticate = ({ clientID, clientSecret }) => {
+  const credentials = Buffer.from(
+    `${clientID}:${clientSecret}`
+  ).toString('base64');
 
-const authenticate = () => {
-  console.log('HELLO');
   return axios({
     method: 'POST',
     url: `${process.env.GN_ENDPOINT}/oauth/token`,
@@ -33,8 +32,8 @@ const authenticate = () => {
 };
 
 
-const GNRequest = async () => {
-  const authResponse = await authenticate();
+const GNRequest = async (credentials) => {
+  const authResponse = await authenticate(credentials);
   const accessToken = authResponse.data?.access_token;
 
   return axios.create({
